@@ -10,13 +10,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Add the executable for your project
 add_executable(weekly_code main.cpp)
 
-set(lib week3)
+# ====================================================
 
-# Add the subdirectories for libraries
-add_subdirectory(inc/${lib})
+# Add additional library names
+set(libs_list week4)
 
-# Link the libraries
-target_link_libraries(weekly_code ${lib})
+# Add subdirectories for all libraries
+foreach(lib ${libs_list})
+    add_subdirectory(inc/${lib})
+endforeach()
+
+# Link all libraries
+target_link_libraries(weekly_code ${libs_list})
 
 # Include directories for the libraries
 target_include_directories(weekly_code PUBLIC "${PROJECT_BINARY_DIR}")
+

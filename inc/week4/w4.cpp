@@ -1,5 +1,5 @@
 #include "w4.h"
 
-void test() {
-    cout << "Hello from week 4!" << endl;
+void run() {
+    cout << "Hello from week 4! using run function" << endl;
 }
