@@ -1,6 +1,8 @@
 #ifndef _H_W3
 #define _H_W3
 #include "../../main.h"
+
+void run();
 void test();
 
 struct BaseObj {
