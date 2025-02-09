@@ -1,5 +1,5 @@
-#ifndef _H_W6
-#define _H_W6
+#ifndef _H_W7
+#define _H_W7
 #include "../../main.h"
 
 void run();
