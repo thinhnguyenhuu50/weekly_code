@@ -41,7 +41,7 @@ struct BType : public BaseObj {
 
 // TODO: List 
 template <class T>
-class List :{
+class List{
 public:
     List() {}
     virtual ~List() {}
@@ -173,8 +173,7 @@ public:
     void traverse(std::function<void (T&)>) const {
         for (T *p = pD, *pE = pD + nE; p != pE;) op(*p++);
     }
-    // => Design is very important
-    };
+};
 
 
 
