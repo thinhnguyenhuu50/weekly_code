@@ -3,7 +3,7 @@
 #include "w8.h"
 
 int main() {
-    string s = "2(x0(y))3(z)";
-	cout << expand(s);
+    string s="data structure and algorithm is scary", result="";
+    cout << reverseSentence("data structure and algorithm is scary");
     return 0;
 }
