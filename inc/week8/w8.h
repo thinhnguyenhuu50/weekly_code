@@ -5,5 +5,6 @@
 void run();
 void test();
 /*==============What we learned today!=====================*/
-
+void expand(string &s, size_t left, size_t right);
+string expand(string s);
 #endif
