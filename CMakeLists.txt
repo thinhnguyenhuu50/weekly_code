@@ -13,7 +13,7 @@ add_executable(weekly_code main.cpp)
 # ====================================================
 
 # Add additional library names
-set(libs_list week8)
+set(libs_list labs)
 
 # Add subdirectories for all libraries
 foreach(lib ${libs_list})
