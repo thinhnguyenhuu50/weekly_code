@@ -15,5 +15,4 @@ void removeBracket(string &s, size_t left);
 int mininumBracketAdd(string s);
 void reverseSentence(const string &s, string &result, size_t left);
 string reverseSentence(string s);
-/*==============What we learned today!=====================*/
 #endif

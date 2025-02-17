@@ -1,8 +1,8 @@
 #include "main.h"
 
-#include "labs.h"
+#include "w8.h"
 
 int main() {
-    
+    run();
     return 0;
 }

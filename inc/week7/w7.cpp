@@ -2,17 +2,27 @@
 
 void run() {
     test();
-    List<int> *pL = new ArrList<int>;
+    List<int> *pL = new ArrList<int>, *pL2;
     for (int i = 0; i < 10; ++i) pL->push_back(rand() % 100);
+    pL2 = &(pL->clone());
     pL ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;
     pL->insert(-1, 5);
     pL ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;
 
     pL->remove(pL->findInx(24));
-    pL ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;
-    float s = 0, ss = 0;
-    pL->traverse([&s, &ss](const int& val) {s += val; ss += val*val;}); 
-    cout << "average = " << double(s/pL->getSize()) << ", std = " << (double)(sqrt(ss/pL->getSize() - (s * s/(pL->getSize()*pL->getSize())))) << endl;
+    cout << "pL: "; pL ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;
+    cout << "pL2: "; pL2 ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;
+    
+    pL->inject(*pL2, 2);
+    cout << "pL: "; pL ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;
+
+    List<int> *pIdx = &(pL->findAllIdx(24));
+    cout << "pIdx: "; pIdx ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;
+
+    pIdx->traverse([pL](int idx) {(*pL)[idx] = -1;});
+    cout << "pL: "; pL ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;
+
+    
     delete pL;
 }
 
