@@ -22,7 +22,7 @@ void run() {
     pIdx->traverse([pL](int idx) {(*pL)[idx] = -1;});
     cout << "pL: "; pL ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;
 
-    
+    delete pIdx;
     delete pL;
 }
 

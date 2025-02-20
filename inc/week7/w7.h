@@ -63,7 +63,8 @@ template <class T> class List {
     // => Design is very important
 };
 
-template <class T> class ArrList : public List<T> {
+template <class T> 
+class ArrList : public List<T> {
   protected:
     T *pD;
     int nE, cap;
@@ -219,12 +220,13 @@ template <class T> class ArrList : public List<T> {
     }
 };
 
-template <typename T> class L1List : public List<T> {
+template <typename T> 
+class L1List : public List<T> {
   protected:
     struct Node {
         T data;
         Node *pNext;
-        Node(const T &val, Node8 pN = nullptr) : data(val), pNext(P_NOWAIT) {}
+        Node(const T &val, Node *pNext = nullptr) : data(val), pN(P_NOWAIT) {}
         Node(T &&val) : data(std::move(val)), pNext(nullptr) {}
     };
     Node *pHead;
