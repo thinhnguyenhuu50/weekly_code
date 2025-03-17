@@ -7,6 +7,7 @@
 #include <cmath>
 #include <string.h>
 #include <utility> 
+#include <vector>
 
 using namespace std;
 

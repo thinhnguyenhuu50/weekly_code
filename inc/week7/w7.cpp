@@ -5,6 +5,12 @@ void run() {
     List<int> *pL = new ArrList<int>, *pL2;
     for (int i = 0; i < 10; ++i) pL->push_back(rand() % 100);
     pL2 = &(pL->clone());
+
+
+    for (auto i : (*pL)) cout << setw(5) << i; cout << endl;
+    for (auto bIter = pL->begin(), eIter = pL->end(); bIter != eIter; ++bIter) cout << setw(8) << *bIter; cout << endl;
+
+
     pL ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;
     pL->insert(-1, 5);
     pL ->traverse([](const int& val) {std::cout << setw(5) << val;}); cout << endl;

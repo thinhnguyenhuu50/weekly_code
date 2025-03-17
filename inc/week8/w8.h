@@ -11,6 +11,9 @@ public:
     List() {}
     virtual ~List() {}
 
+    virtual fwIterator<T> begin() = 0;
+    virtual fwIterator<T> end() = 0;
+
     virtual int getSize() const = 0;
     virtual bool isEmpty() const = 0;
     virtual void clear() = 0;

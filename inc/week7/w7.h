@@ -13,8 +13,68 @@ struct DSA_Exception {
 void run();
 void test();
 
-template <class T> class List {
-  public:
+template <class T>
+class fwIterBase {
+public:
+    fwIterBase() {}
+    virtual ~fwIterBase() {}
+    virtual fwIterBase<T> *clone() = 0;
+    virtual T &operator*() = 0;
+    virtual fwIterBase<T> &operator+(unsigned int offset) = 0;
+    virtual fwIterBase<T> &operator++() = 0;    // prefix
+    virtual fwIterBase<T> &operator++(int) = 0; // postfix
+    virtual fwIterBase<T> &operator=(const fwIterBase<T> &) = 0;
+    virtual bool operator==(const fwIterBase<T> &) = 0;
+    virtual bool operator!=(const fwIterBase<T> &) = 0;
+};
+
+template <class T>
+class fwIterator {
+protected:
+    fwIterBase<T> *ptr;
+
+public:
+    fwIterator() : ptr(nullptr) {}
+    fwIterator(fwIterBase<T> *p) : ptr(p) {}
+    fwIterator(const fwIterator<T> &i) : ptr(i.ptr->clone()) {}
+    fwiterator(fwiterator<T> &&i) : ptr(i.ptr) { i.ptr = nullptr; }
+    ~fwIterator() {
+        if (ptr)
+            delete ptr;
+    }
+
+    T &operator*() { return ptr->operator*(); }
+    fwIterator<T> operator+(unsigned int offset) {
+        fwiterator<T> i(*this);
+        *(i.ptr) = i.ptr->operator+(offset); // giá trị trả về có tạm thời??
+        return i;
+    }
+    fwIterator<T> &operator++() {
+        ++(*ptr);
+        return *this;
+    }
+    fwIterator<T> &operator++(int) {
+        fwiterator<T> i(*this);
+        ++(*ptr);
+        return i;
+    } // ++i faster
+    fwIterator<T> &operator=(const fwIterator<T> &i) {
+        if (ptr)
+            delete ptr;
+        ptr = i.ptr->clone();
+        return *this;
+    }
+    bool operator==(const fwIterator<T> &i) {
+        return (*ptr == (*i.ptr));
+    }
+    bool operator!=(const fwIterator<T> &i) {
+        return (*ptr != (*i.ptr));
+    }
+};
+
+template <class T>
+class List {
+public:
     List() {}
     virtual ~List() {}
 
@@ -63,13 +123,49 @@ template <class T> class List {
     // => Design is very important
 };
 
-template <class T> 
+template <class T>
 class ArrList : public List<T> {
-  protected:
+protected:
     T *pD;
     int nE, cap;
 
-  public:
+public:
+    class fwArrIter : public fwIterBase<T> {
+    protected:
+        T *p;
+
+    public:
+        fwArrIter() : p(nullptr) {}
+        fwArrIter(T *ptr) : p(ptr) {}
+        fwArrIter(const fwArrIter &i) : p(i.p) {}
+
+        fwIterBase<T> *clone() { return new fwArrIter(*this); }
+        T &operator*() { return *p; }
+        fwIterBase<T> &operator+(unsigned int offset) {
+            fwArrIter i(p + offset);
+            return i;
+        }
+        fwIterBase<T> &operator++() {
+            ++p;
+            return *this;
+        }
+        fwIterBase<T> &operator++(int) {
+            fwArrIter i(*this);
+            ++p;
+            return i;
+        }
+        fwIterBase<T> &operator=(const fwIterBase<T> &i) {
+            // p = &(i.operator*()); return *this;
+            p = ((fwArrIter *)&i)->p;
+            return *this;
+        }
+        bool operator==(const fwIterBase<T> &i) { return p == ((fwArrIter *)&i)->p; }
+        bool operator!=(const fwIterBase<T> &i) { return p != ((fwArrIter *)&i)->p; }
+    };
+
+    fwIterator<T> begin() { return fwIterator<T>(new fwArrIter(pD)); }
+    fwIterator<T> end() { return fwIterator<T>(new fwArrIter(pD + nE)); } // end placed behind the last element
+
     ArrList() : cap(0), nE(0), pD(nullptr) {}
     ArrList(int N) : cap(N), nE(0), pD(nullptr) { resize(N); }
     ~ArrList() { clear(); }
@@ -220,9 +316,9 @@ class ArrList : public List<T> {
     }
 };
 
-template <typename T> 
+template <typename T>
 class L1List : public List<T> {
-  protected:
+protected:
     struct Node {
         T data;
         Node *pNext;
@@ -232,7 +328,47 @@ class L1List : public List<T> {
     Node *pHead;
     int nE;
 
-  public:
+public:
+    class fwL1Iter : public fwIterBase<T> {
+    protected:
+        Node *p;
+
+    public:
+        fwL1Iter() : p(nullptr) {}
+        fwL1Iter(T *ptr) : p(ptr) {}
+        fwL1Iter(const fwL1Iter &i) : p(i.p) {}
+
+        fwIterBase<T> *clone() { return new fwL1Iter(*this); }
+        T &operator*() { return p->data; }
+        fwIterBase<T> &operator+(unsigned int offset) {
+            fwL1Iter i(p);
+            while (offset && i.p) {
+                i.p = i.p->pNext;
+                offset--;
+            }
+            return i;
+        }
+        fwIterBase<T> &operator++() {
+            if (p) p = p->pNext;
+            return *this;
+        }
+        fwIterBase<T> &operator++(int) {
+            fwL1Iter i(*this);
+            if (p) p = p->pNext;
+            return i;
+        }
+        fwIterBase<T> &operator=(const fwIterBase<T> &i) {
+            // p = &(i.operator*()); return *this;
+            p = ((fwL1Iter *)&i)->p;
+            return *this;
+        }
+        bool operator==(const fwIterBase<T> &i) { return p == ((fwL1Iter *)&i)->p; }
+        bool operator!=(const fwIterBase<T> &i) { return p != ((fwL1Iter *)&i)->p; }
+    };
+
+    fwIterator<T> begin() { return fwIterator<T>(new fwL1Iter(pHead)); }
+    fwIterator<T> end() { return fwIterator<T>(new fwL1Iter(nullptr)); } // end placed behind the last element
+
     L1List() : pHead(nullptr), nE(0) {}
     ~L1List() { clear(); }
 
@@ -247,9 +383,12 @@ class L1List : public List<T> {
         nE = 0;
     }
     T &operator[](int idx) {
-        for (Node *p = pHead; p&&idx;idx--,  p = p->pNext);
-        if (p) return p->data;
-        else throw new DSA_Exception{-100, "L1List<T>::operator[]: invalid index", nullptr};
+        for (Node *p = pHead; p && idx; idx--, p = p->pNext)
+            ;
+        if (p)
+            return p->data;
+        else
+            throw new DSA_Exception{-100, "L1List<T>::operator[]: invalid index", nullptr};
     }
     void insert(const T &val, int idx) {
         Node **p = &pHead;
@@ -270,7 +409,7 @@ class L1List : public List<T> {
         ++nE;
     }
     void push_back(const T &val) { insert(val, nE); }
-    void remove (int idx) {
+    void remove(int idx) {
         Node **p = &pHead;
         while (*p && idx) {
             p = &((*p)->pNext);
@@ -285,21 +424,24 @@ class L1List : public List<T> {
     }
     T *find(const T &key, std::function<bool(const T &, const T &)> equal = [](const T &k, const T &v) -> bool { return k == v; }) {
         for (Node *p = pHead; p; p = p->pNext) {
-            if (equal(key, p->data)) return &p->data;
+            if (equal(key, p->data))
+                return &p->data;
         }
         return nullptr;
     }
     int findInx(const T &key, std::function<bool(const T &, const T &)> equal = [](const T &k, const T &v) -> bool { return k == v; }) {
         int idx = 0;
         for (Node *p = pHead; p; p = p->pNext, idx++) {
-            if (equal(key, p->data)) return idx;
+            if (equal(key, p->data))
+                return idx;
         }
         return -1;
     }
     List<void *> &findAll(const T &key, std::function<bool(const T &, const T &)> equal = [](const T &k, const T &v) -> bool { return k == v; }) {
         ArrList<void *> *pIdxL = new ArrList<void *>;
         for (Node *p = pHead; p; p = p->pNext) {
-            if (equal(key, p->data)) pIdxL->push_back(&p->data);
+            if (equal(key, p->data))
+                pIdxL->push_back(&p->data);
         }
         return *pIdxL;
     }
@@ -307,13 +449,15 @@ class L1List : public List<T> {
         ArrList<int *> *pIdxL = new ArrList<int *>;
         int idx = 0;
         for (Node *p = pHead; p; p = p->pNext, idx++) {
-            if (equal(key, p->data)) pIdxL->push_back(idx);
+            if (equal(key, p->data))
+                pIdxL->push_back(idx);
         }
         return *pIdxL;
     }
     List<T> &concat(List<T> &b) {
         Node **p = &pHead;
-        while (*p) p = &((*p)->pNext);
+        while (*p)
+            p = &((*p)->pNext);
         b.traverse([&p](T &val) {
             *p = new Node(val, nullptr);
             p = &((*p)->pNext);
@@ -326,21 +470,33 @@ class L1List : public List<T> {
         if (idx2 - idx1 == 1) {
             Node **p = &pHead;
             int idx = idx1;
-            while (*p && idx) { p = &((*p)->pNext); idx--; }
+            while (*p && idx) {
+                p = &((*p)->pNext);
+                idx--;
+            }
             Node *p1 = *p, *p2 = p1->pNext, *p3 = p2->pNext;
-            *p = p2; p2->pNext = p1; p1->pNext = p3;
-        }
-        else {
+            *p = p2;
+            p2->pNext = p1;
+            p1->pNext = p3;
+        } else {
             Node **pp1 = &pHead;
             int idx = idx1;
-            while (*pp1 && idx) { pp1 = &((*pp1)->pNext); idx--; }
+            while (*pp1 && idx) {
+                pp1 = &((*pp1)->pNext);
+                idx--;
+            }
             Node **pp3 = pp1;
             idx += idx2 - idx1;
-            while (*pp3 && idx) { pp3 = &((*pp3)->pNext); idx--; }
+            while (*pp3 && idx) {
+                pp3 = &((*pp3)->pNext);
+                idx--;
+            }
             Node *p1 = *pp1, *p2 = p1->pNext, *p3 = *pp3;
-            
-            p1->pNext = p3->pNext; *pp3 = p1;
-            p3->pNext = p2; *pp1 = p3;
+
+            p1->pNext = p3->pNext;
+            *pp3 = p1;
+            p3->pNext = p2;
+            *pp1 = p3;
         }
     }
     void revert() {
@@ -355,9 +511,12 @@ class L1List : public List<T> {
     }
     List<T> &inject(const List<T> &b, int idx) {
         Node **p = &pHead;
-        while (*p && idx) { p = &((*p)->pNext); idx--; }
+        while (*p && idx) {
+            p = &((*p)->pNext);
+            idx--;
+        }
         Node *pT = *p;
-        b.traverse([&p](T&val) {
+        b.traverse([&p](T &val) {
             *p = new Node(val);
             p = &((*p)->pNext);
         });
@@ -366,10 +525,15 @@ class L1List : public List<T> {
         return *this;
     }
     List<T> &clone(int idx1 = 0, int idx2 = -1) {
-        if (idx2 < 0) idx2 = nE;
+        if (idx2 < 0)
+            idx2 = nE;
         List<T> *pL = new L1List<T>;
-        Node *p = pHead; int idx = idx1;
-        while (p && idx) {idx--; p = p->pNext;} 
+        Node *p = pHead;
+        int idx = idx1;
+        while (p && idx) {
+            idx--;
+            p = p->pNext;
+        }
         for (int i = idx1; i < idx2; i++) {
             pL->insert(p->data, 0);
             p = p->pNext;
@@ -378,7 +542,8 @@ class L1List : public List<T> {
         return *pL;
     }
     void traverse(std::function<void(const T &)> op) const {
-        for (Node *p = pHead; p; p = p->pNext) op(p->data);
+        for (Node *p = pHead; p; p = p->pNext)
+            op(p->data);
     }
 };
 #endif

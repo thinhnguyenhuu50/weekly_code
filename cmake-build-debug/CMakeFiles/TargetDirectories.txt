@@ -1,0 +1,6 @@
+D:/HK_4/Data_Structures_and_Algorithms/weekly_code/cmake-build-debug/CMakeFiles/weekly_code.dir
+D:/HK_4/Data_Structures_and_Algorithms/weekly_code/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/HK_4/Data_Structures_and_Algorithms/weekly_code/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+D:/HK_4/Data_Structures_and_Algorithms/weekly_code/cmake-build-debug/inc/week10/CMakeFiles/week10.dir
+D:/HK_4/Data_Structures_and_Algorithms/weekly_code/cmake-build-debug/inc/week10/CMakeFiles/edit_cache.dir
+D:/HK_4/Data_Structures_and_Algorithms/weekly_code/cmake-build-debug/inc/week10/CMakeFiles/rebuild_cache.dir

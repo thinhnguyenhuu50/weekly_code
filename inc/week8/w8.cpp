@@ -81,8 +81,16 @@ void testAdvanced(List<T> *pL) {
 }
 void run() {
     List<int> *pL = new L1List<int>;
-    testAdvanced(pL);
+    // testAdvanced(pL);
     // testBasic(pL);
+
+    vector<int> v;
+    v.reserve(10);
+    for (int i =0; i < 10; i++) {
+        v.push_back(rand() % 100);
+    }
+    for(int val :v) cout << setw(5) << val; cout << endl;
+    // begin và end là ngoại lệ, có thể trả về nhiều iterator khác nhau, tùy vào tình huống
     delete pL;
 }
 
